@@ -38,7 +38,12 @@ const todoSlice = createSlice({
       state.loading = false
       state.error = action.payload || 'Something went wrong'
     },
-    updateTask: (state, action) => {}   
+    updateTask: (state, action) => {
+      const {id} = action.payload
+      state.tasks = state.tasks.map(task => 
+        task.id === id ? 
+            {...state.tasks, ...action.payload} : task )
+    }   
   }
 });
 
