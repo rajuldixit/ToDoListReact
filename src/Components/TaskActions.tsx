@@ -29,7 +29,7 @@ const TaskActions = () => {
   };
 
   return (
-    <Stack direction={'row'} flexDirection={'row'} spacing={2}>
+    <Stack direction={'row'} flexDirection={'row'} spacing={2} justifyContent={'end'}>
       <Button variant='outlined' color='secondary' onClick={handleEditClickOpen}>Edit</Button>
       <Button variant='outlined' color='error' onClick={handleClickOpen}>Delete</Button>
       <DeleteTask open={open} handleClose={handleClose} />

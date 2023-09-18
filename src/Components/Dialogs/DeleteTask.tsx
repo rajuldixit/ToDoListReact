@@ -13,8 +13,8 @@ const DeleteTask = (props: any) => {
         
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleClose}>Delete</Button>
+        <Button onClick={handleClose} variant='outlined' color='primary'>Cancel</Button>
+        <Button onClick={handleClose} variant='contained' color='error'>Delete</Button>
       </DialogActions>
     </Dialog>
   )

@@ -5,7 +5,7 @@ import TaskActions from './TaskActions';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-      backgroundColor: 'rgba(0, 150, 213, 1)',
+      backgroundColor: 'rgb(56 181 233)',
       boxShadow: '0px 10px 20px 0px rgba(10, 17, 81, 0.04)',
       color: theme.palette.common.white,
       fontSize: 18

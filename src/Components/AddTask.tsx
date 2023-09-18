@@ -20,7 +20,7 @@ const AddTask = () => {
     
   return (
     <Stack>
-      <Button onClick={handleClickOpen}>Add Task</Button>
+      <Button sx={{width: '200px'}} onClick={handleClickOpen} variant='contained' color='secondary'>Add Task</Button>
       <AddUpdate open={open} handleClose={handleClose} title={'Add Task'} type={AddEditTask.ADD} />
     </Stack>
   )
