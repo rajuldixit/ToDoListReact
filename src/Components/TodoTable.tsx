@@ -5,7 +5,7 @@ import TaskActions from './TaskActions';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-      backgroundColor: 'rgb(56 181 233)',
+      backgroundColor: 'rgb(199 105 175)',
       boxShadow: '0px 10px 20px 0px rgba(10, 17, 81, 0.04)',
       color: theme.palette.common.white,
       fontSize: 18
@@ -27,7 +27,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const TodoTable = () => {
   const tasks = useAppSelector(state => state.todo.tasks)  
-
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -47,9 +46,9 @@ const TodoTable = () => {
             {task.name}
             </StyledTableCell>
             <StyledTableCell align="right">{task.description}</StyledTableCell>
-            <StyledTableCell align="right">{task.dueDate}</StyledTableCell>
+            <StyledTableCell align="right">{task.dueDate || ''}</StyledTableCell>
             <StyledTableCell align="right">{task.status}</StyledTableCell>
-            <StyledTableCell align="right"><TaskActions /></StyledTableCell>
+            <StyledTableCell align="right"><TaskActions task={task} /></StyledTableCell>
           </StyledTableRow>
         ))}
         </TableBody>

@@ -1,11 +1,14 @@
 import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, Menu, MenuItem, Stack, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import { AddEditTask, TaskStatuses } from '../../Constants/utils'
-import { useController, useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react'
+import { AddEditTask } from '../../Constants/utils'
+import { useForm } from 'react-hook-form';
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"; 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CustomDropdown from '../CustomDropdown';
+import { useAppDispatch } from '../../AppState/hooks';
+import { addTask, updateTask } from '../../AppState/TODO/TodoSlice';
+import moment from 'moment';
 
 type FormData = {
   name: string;
@@ -15,40 +18,71 @@ type FormData = {
 };
 
 const statusOption = [
+  'New',
+  'Hold',
   'Yet to Pick',
   'In progress',
   'Completed',
   'Cancelled'
-]
+];
+
+type AddUpdateProps = {
+  handleClose: (event: React.MouseEvent<HTMLElement>) => void,
+  open: boolean,
+  type: string,
+  task?: {
+    id: number,
+    name: string;
+    description: string;
+    dueDate: string;
+    status: string 
+  }
+}
 
 const AddUpdate = (props: any) => {
-  const {handleClose, open, title, type} = props,
-  { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>(),
-  [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null),
-  [selectedIndex, setSelectedIndex] = useState(1),
-  [dueDate, setDueDate] = useState(new Date()),
-  openMenu = Boolean(anchorEl),
-  handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
+  const {handleClose, open, type, task} = props,
+  { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>(),
+  [dueDate, setDueDate] = useState<any>(),
+  [dateError, setDateError] = useState(false),
+  [statusSelectedIndex, setStatusSelectedIndex] = useState(0),
+  dispatch = useAppDispatch(),
+  
+  onSubmit = (data: FormData) => {  
+    let taskObj = {
+      name: data.name,
+      description: data.description,
+      dueDate: moment(dueDate).format('MM/DD/YYYY'),
+      status: type === AddEditTask.EDIT ? data.status : 'New'
+    } 
+    console.log(type === AddEditTask.ADD,AddEditTask.ADD.toString(), type)
+    if (type === AddEditTask.ADD.toString()) {
+      dispatch(addTask(taskObj))
+    } else if (type === AddEditTask.EDIT) {
+      const updatedTaskObj = {...taskObj, id: task.id}
+      dispatch(updateTask(updatedTaskObj))
+    }
+    handleClose()
   },
-
-  handleMenuItemClick = (
-    event: React.MouseEvent<HTMLElement>,
-    index: number,
-  ) => {
-    setSelectedIndex(index);
-    setAnchorEl(null);
+  handleDateError = () => {
+    setDateError(true)
   },
-
-  handleMenuClose = () => {
-    setAnchorEl(null);
-  },
-  onSubmit = (data: any) => {  
-    console.log(data) 
+  handleMenuSelection = (index: number) => {
+    setValue('status', statusOption[index])
+    setStatusSelectedIndex(index)
   }
+
+  useEffect(() => {
+    if(type === AddEditTask.EDIT && task) {
+      const statusIndex = statusOption.indexOf(task.status)
+      setStatusSelectedIndex(statusIndex)
+      setValue('name', task.name)
+      setValue('description', task.description)
+      setDueDate(new Date(task.dueDate))
+    }
+  }, [type])
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>{title}</DialogTitle>
+      <DialogTitle>{type === AddEditTask.EDIT ? 'Edit Task' : 'Add Task'}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
       <DialogContent>    
         <DialogContentText sx={{marginBottom: '16px'}}>
@@ -59,29 +93,34 @@ const AddUpdate = (props: any) => {
           }
         </DialogContentText>
         <Stack spacing={2}>
-          <TextField sx={{display: 'block'}} label="Name" variant="outlined" {...register("name")} />
+          <TextField sx={{display: 'block'}} label="Name" variant="outlined" {...register("name", { required: true })} />
+          {errors.name?.type === 'required' && <p role="alert" style={{color: 'red'}}>Name is required</p>}
           <TextField
             label="Description"
             multiline
             maxRows={4}
             sx={{display: 'block'}} 
-            {...register("description")}
+            {...register("description", { required: true })}
           />
+          {errors.description?.type === 'required' && <p role="alert" style={{color: 'red'}}>Description is required</p>}
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label="Due Date"
               sx={{display: 'block'}} 
+              minDate={new Date()}
+              onError={handleDateError}
+              value={dueDate}
               onChange={(date: any) => setDueDate(date)}
               slotProps={{
                 textField: {
                   helperText: 'MM/DD/YYYY',
+                  required: true
                 },
               }}
             />
           </LocalizationProvider>
-          {type === AddEditTask.EDIT && <CustomDropdown title={'Status'} options={statusOption} handleMenuItemClick={function (event: React.MouseEvent<HTMLElement, MouseEvent>, index: number): void {
-            throw new Error('Function not implemented.');
-          } } />}
+          {dateError ? <p role="alert" style={{color: 'red'}}>Date is required</p> : ''}
+          {type === AddEditTask.EDIT && <CustomDropdown {...register('status')} title={'Status'} selectedIndex={statusSelectedIndex} options={statusOption} handleMenuItem={handleMenuSelection} />}
         </Stack>
       </DialogContent>
       <DialogActions>

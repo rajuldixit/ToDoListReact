@@ -1,4 +1,4 @@
-import { Button, MenuItem, Divider, Menu, MenuProps, alpha, styled, Stack } from '@mui/material';
+import { Button, MenuItem,  Menu, MenuProps, alpha, styled, Stack, Typography } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import React from 'react'
 
@@ -43,9 +43,14 @@ const StyledMenu = styled((props: MenuProps) => (
     },
   }));
 
-type DropdownProps = {title: string, options: string[], selectedIndex?: number, handleMenuItemClick: (event: React.MouseEvent<HTMLElement>, index: number) => void}
+type DropdownProps = {
+  title: string, 
+  options: string[], 
+  selectedIndex?: number, 
+  handleMenuItem: (index: number) => void
+}
 const CustomDropdown = (props: DropdownProps) => {
-    const {title, options, handleMenuItemClick, selectedIndex} = props;
+    const {title, options, handleMenuItem, selectedIndex = 0} = props;
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -54,9 +59,15 @@ const CustomDropdown = (props: DropdownProps) => {
     const handleClose = () => {
       setAnchorEl(null);
     };
+
+    const handleMenuItemClick = (option: React.MouseEvent<HTMLElement>, index: number) => {
+      handleMenuItem(index)
+      handleClose()
+    }
   
     return (
       <Stack sx={{display: 'block'}} >
+        <Typography>{title}</Typography>
         <Button
           id="demo-customized-button"
           aria-controls={open ? 'demo-customized-menu' : undefined}
@@ -67,7 +78,7 @@ const CustomDropdown = (props: DropdownProps) => {
           onClick={handleClick}
           endIcon={<KeyboardArrowDownIcon />}
         >
-          {title}
+          {options[selectedIndex]}
         </Button>
         <StyledMenu
           id="demo-customized-menu"

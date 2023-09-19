@@ -7,7 +7,6 @@ import Tasks from '../Components/Tasks';
 
 const Home = () => {
   const tasks = useAppSelector(state => state.todo.tasks)
-  console.log(tasks)
   return (
     <Box>
        {

@@ -28,7 +28,9 @@ const todoSlice = createSlice({
     }, 
     addTask(state, action) {
       state.loading = false
-      state.tasks = [action.payload, ...state.tasks];
+      const tasksLength = state.tasks.length
+      const obj = {id: tasksLength+1, ...action.payload}
+      state.tasks = [obj, ...state.tasks];
     },
     removeTask(state, action) {
       const { id } = action.payload; 
